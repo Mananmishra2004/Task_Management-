@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-zinc-950 to-zinc-950 p-10">
+    
+    <div class="fixed inset-0 z-[-1] h-full w-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-12">
+            <div>
+                <h1 class="text-4xl font-black tracking-tighter bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">
+                    Task Dashboard
+                </h1>
+                <p class="text-zinc-500 text-sm mt-1">Manage your team's workflow and priorities.</p>
+            </div>
+            <div class="space-x-4">
+                <a href="/create-task" class="bg-blue-600 hover:bg-blue-500 transition-colors px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-900/20">+ New Task</a>
+                <a href="/logout" class="text-zinc-500 hover:text-red-400 text-sm transition-colors">Logout</a>
+            </div>
+        </div>
+
+        <div class="bg-zinc-900/40 backdrop-blur-md border border-zinc-800/50 rounded-2xl overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-zinc-800/30 text-zinc-500 text-xs uppercase tracking-widest">
+                    <tr>
+                        <th class="p-5">Task Details</th>
+                        <th class="p-5">Priority</th>
+                        <th class="p-5">Status</th>
+                        <th class="p-5 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-800/50">
+                    <% tasks.forEach(t => { %>
+                    <tr class="hover:bg-white/[0.02] transition-colors">
+                        <td class="p-5">
+                            <div class="font-bold text-zinc-200 text-lg"><%= t.title %></div>
+                            <div class="text-sm text-zinc-500 max-w-xs truncate"><%= t.description %></div>
+                        </td>
+                        <td class="p-5">
+                            <% if(t.priority === 'High') { %>
+                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter bg-red-500/10 text-red-500 border border-red-500/20">High</span>
+                            <% } else { %>
+                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter bg-zinc-800 text-zinc-400 border border-zinc-700"><%= t.priority %></span>
+                            <% } %>
+                        </td>
+                        <td class="p-5">
+                            <div class="flex items-center gap-2 text-sm text-zinc-400">
+                                <div class="w-2 h-2 rounded-full <%= t.status === 'Completed' ? 'bg-green-500' : 'bg-yellow-500' %>"></div>
+                                <%= t.status %>
+                            </div>
+                        </td>
+                        <td class="p-5 text-right space-x-6">
+                            <a href="/edit/<%= t._id %>" class="text-zinc-400 hover:text-blue-400 transition-colors text-sm font-medium">Edit</a>
+                            <a href="/delete/<%= t._id %>" class="text-zinc-600 hover:text-red-500 transition-colors text-sm font-medium">Delete</a>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

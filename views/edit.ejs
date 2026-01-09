@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-zinc-950 text-white flex items-center justify-center min-h-screen p-6 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-indigo-900/20 via-zinc-950 to-zinc-950">
+    <form action="<%= typeof task !== 'undefined' ? '/update/'+task._id : '/create' %>" method="post" class="bg-white/5 backdrop-blur-2xl p-8 rounded-[2.5rem] border border-white/10 w-full max-w-lg space-y-6">
+        <h2 class="text-3xl font-black tracking-tighter italic"><%= typeof task !== 'undefined' ? 'REVISE TASK' : 'New Task' %></h2>
+        
+        <div class="space-y-4">
+            <input name="title" value="<%= typeof task !== 'undefined' ? task.title : '' %>" required class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:ring-2 ring-blue-500/50" placeholder="Title">
+            <textarea name="description" rows="4" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:ring-2 ring-blue-500/50" placeholder="Describe the mission..."><%= typeof task !== 'undefined' ? task.description : '' %></textarea>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <select name="priority" class="bg-zinc-900 border border-white/10 p-4 rounded-2xl outline-none">
+                    <option value="Low" <%= (typeof task !== 'undefined' && task.priority==='Low') ? 'selected' : '' %>>Low Priority</option>
+                    <option value="Medium" <%= (typeof task !== 'undefined' && task.priority==='Medium') ? 'selected' : '' %>>Medium Priority</option>
+                    <option value="High" <%= (typeof task !== 'undefined' && task.priority==='High') ? 'selected' : '' %>>High Priority</option>
+                </select>
+                <select name="status" class="bg-zinc-900 border border-white/10 p-4 rounded-2xl outline-none">
+                    <option value="Pending" <%= (typeof task !== 'undefined' && task.status==='Pending') ? 'selected' : '' %>>Pending</option>
+                    <option value="In Progress" <%= (typeof task !== 'undefined' && task.status==='In Progress') ? 'selected' : '' %>>Working</option>
+                    <option value="Completed" <%= (typeof task !== 'undefined' && task.status==='Completed') ? 'selected' : '' %>>Finished</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex gap-4">
+            <button class="flex-1 bg-white text-black py-4 rounded-2xl font-black hover:bg-zinc-200 transition-colors">Confirm</button>
+            <a href="/admin" class="flex-1 bg-white/5 border border-white/10 py-4 rounded-2xl font-bold text-center hover:bg-white/10 transition-colors">Abort</a>
+        </div>
+    </form>
+</body>
+</html>
