@@ -6,13 +6,19 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const taskModel = require('./models/task');
 
-// 🔐 Use env variable (Render) OR fallback
+// 🔐 Secret
 const JWT_SECRET = process.env.JWT_SECRET || "task_secret_123";
 
-// ✅ MongoDB Atlas Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://mishramanan488_db_user:52pioVPWSUh3olaY@cluster0.kvtejsq.mongodb.net/taskManager?retryWrites=true&w=majority')
+// ✅ MongoDB Connection (Improved)
+mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://mishramanan488_db_user:52pioVPWSUh3olaY@cluster0.kvtejsq.mongodb.net/taskManager?retryWrites=true&w=majority', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
 .then(() => console.log("✅ MongoDB Connected"))
-.catch(err => console.log("❌ DB Error:", err));
+.catch(err => {
+    console.error("❌ MongoDB Error:", err);
+    process.exit(1); // stop app if DB fails
+});
 
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -56,49 +62,79 @@ app.get('/logout', (req, res) => {
     res.redirect("/read");
 });
 
-// Create (Admin Only)
+// Create
 app.get('/create-task', isAdmin, (req, res) => res.render("index"));
 
 app.post('/create', isAdmin, async (req, res) => {
-    await taskModel.create(req.body);
-    res.redirect("/admin");
+    try {
+        await taskModel.create(req.body);
+        res.redirect("/admin");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error creating task");
+    }
 });
 
-// Read (Public)
+// Read (FIXED 🔥)
 app.get('/read', async (req, res) => {
-    let tasks = await taskModel.find();
-    let loggedIn = !!req.cookies.token;
-    res.render("read", { tasks, isAdmin: loggedIn });
+    try {
+        let tasks = await taskModel.find();
+        let loggedIn = !!req.cookies.token;
+        res.render("read", { tasks, isAdmin: loggedIn });
+    } catch (err) {
+        console.error("❌ READ ERROR:", err);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 // Admin Dashboard
 app.get('/admin', isAdmin, async (req, res) => {
-    let tasks = await taskModel.find();
-    res.render("admin", { tasks });
+    try {
+        let tasks = await taskModel.find();
+        res.render("admin", { tasks });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error loading admin");
+    }
 });
 
 // Edit
 app.get('/edit/:id', isAdmin, async (req, res) => {
-    let task = await taskModel.findById(req.params.id);
-    res.render("edit", { task });
+    try {
+        let task = await taskModel.findById(req.params.id);
+        res.render("edit", { task });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error loading edit page");
+    }
 });
 
 // Update
 app.post('/update/:id', isAdmin, async (req, res) => {
-    await taskModel.findByIdAndUpdate(req.params.id, req.body);
-    res.redirect("/admin");
+    try {
+        await taskModel.findByIdAndUpdate(req.params.id, req.body);
+        res.redirect("/admin");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error updating task");
+    }
 });
 
 // Delete
 app.get('/delete/:id', isAdmin, async (req, res) => {
-    await taskModel.findByIdAndDelete(req.params.id);
-    res.redirect("/admin");
+    try {
+        await taskModel.findByIdAndDelete(req.params.id);
+        res.redirect("/admin");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error deleting task");
+    }
 });
 
 // Default route
 app.get('/', (req, res) => res.redirect('/read'));
 
-// ✅ IMPORTANT: Dynamic PORT (Render compatible)
+// ✅ Render PORT fix
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
