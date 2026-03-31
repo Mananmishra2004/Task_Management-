@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1:27017/taskManager')
+// ✅ Use Atlas connection with database name added
+mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://mishramanan488_db_user:52pioVPWSUh3olaY@cluster0.kvtejsq.mongodb.net/taskManager?retryWrites=true&w=majority')
+.then(() => console.log("✅ MongoDB Connected"))
+.catch((err) => console.log("❌ MongoDB Error:", err));
 
 
-const taskSchema = mongoose.Schema({
+// ✅ Schema
+const taskSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: String,
     priority: { type: String, enum: ['Low', 'Medium', 'High'], default: 'Medium' },
@@ -11,4 +15,5 @@ const taskSchema = mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('task', taskSchema);
+// ✅ Model export
+module.exports = mongoose.model('Task', taskSchema);
